@@ -38,6 +38,9 @@ A lightweight, zero-install browser tool for comparing two `.xlsx` or `.csv` fil
 
 ## Changelog
 
+### v1.2.1
+- Right-locked column lock icon now appears after the header text (on the right)
+
 ### v1.2.0
 - Alt+click column header to ignore columns (excluded from diff, hidden with Hide Unchanged)
 - Ignored columns sync to All Changes tab in real time
