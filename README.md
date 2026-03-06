@@ -1,6 +1,6 @@
 # XLSX Compare
 
-A lightweight, zero-install browser tool for comparing two `.xlsx` files side by side — with row-level diffing, inline change highlighting, and an interactive grid.
+A lightweight, zero-install browser tool for comparing two `.xlsx` or `.csv` files side by side — with row-level diffing, inline change highlighting, and an interactive grid.
 
 ## Features
 
@@ -9,21 +9,23 @@ A lightweight, zero-install browser tool for comparing two `.xlsx` files side by
 - **Smart row matching** — falls back to positional (index-based) matching when no unique key column is found, so changed rows show as modified instead of deleted + added
 - **New/deleted column detection** — new columns show plain green, deleted columns show plain red; both always visible even with Hide Unchanged on
 - **Date formatting** — Excel date serial numbers are rendered as readable dates using the cell's own format string
+- **CSV support** — drop or select `.csv` files alongside `.xlsx`
+- **Ignore columns** — Alt+click a column header to exclude it from diff comparison entirely; ignored columns show a greyed badge and are hidden when Hide Unchanged is on
 - **3-tab view**
   - **Summary** — cards per sheet showing added / deleted / modified row counts, click to jump to grid
   - **Sheet Grid** — full data grid with green (added), red (deleted), yellow (modified) highlights
-  - **All Changes** — flat filterable list of every change with old and new values
+  - **All Changes** — flat filterable list of every change with old and new values; stays in sync with ignored columns
 - **Interactive grid**
-  - Lock columns left or right (sticky scroll) — click header to pin left, Shift+click to pin right
-  - Lock rows — click row number to pin
-  - Resize columns and rows by dragging edges
-  - Hide unchanged rows/columns toggle
+  - `Click` col header — lock left · `Shift+click` — lock right · `Alt+click` — ignore col
+  - `Click` row # — lock row · `Drag` edges — resize
+  - Locked columns always visible; ignored columns hidden when Hide Unchanged is on (unless locked)
+  - Lock priority: Locked > Ignored > Hide Unchanged
 - **No install, no server** — open `index.html` directly in any browser
 
 ## Usage
 
 1. Open `index.html` in a browser
-2. Drop or select **File A** (original) and **File B** (modified)
+2. Drop or select **File A** (original) and **File B** (modified) — `.xlsx` or `.csv`
 3. Click **Compare**
 
 ## Files
@@ -32,23 +34,36 @@ A lightweight, zero-install browser tool for comparing two `.xlsx` files side by
 |------|---------|
 | `index.html` | UI layout and styles |
 | `script.js` | All comparison logic and rendering |
+| `compare.js` | Node CLI tool for headless comparison |
+
+## Changelog
+
+### v1.2.0
+- Alt+click column header to ignore columns (excluded from diff, hidden with Hide Unchanged)
+- Ignored columns sync to All Changes tab in real time
+- New/deleted column cells correctly show as added/deleted (not modified) in All Changes tab
+- Modified row count only increments for real cell changes, not new-column additions
+- Lock icon (🔒) on column headers shows pin direction (left vs right)
+- Improved hint bar with styled keyboard shortcuts
+- Column name no longer cut off in All Changes tab
+- Summary row counts fixed to reflect row-level changes only
+
+### v1.1.0
+- CSV file support (`.csv` accepted alongside `.xlsx`)
+
+### v1.0.0
+- Initial release: row diff, inline cell diff, smart key detection, positional fallback, date formatting, 3-tab view, column/row locking, resize, Hide Unchanged
 
 ## Roadmap
 
-### v1.1 — CSV Support
-Accept `.csv` files alongside `.xlsx`. Parse with SheetJS (`XLSX.read(text, {type:'string'})`). Dropzones update to accept `.xlsx,.csv`. Single-sheet result since CSV has no sheet concept.
-
-### v1.2 — Ignore Columns
-Click a column header to toggle it as "ignored" — excluded from diff comparison entirely. Ignored columns still show in the grid but are never highlighted as changed. Stored as a per-sheet `ignoredCols` Set. Small "ignored" badge on the header.
-
 ### v1.3 — Export Diff
-"Export" button in the grid toolbar. Downloads an `.xlsx` file with the diff results — added rows in green, deleted in red, modified with old/new values side by side. Uses SheetJS write API (already loaded).
+"Export" button in the grid toolbar. Downloads an `.xlsx` file with the diff results — added rows in green, deleted in red, modified with old/new values side by side.
 
 ### v1.4 — Merge View
-New toggle in the grid toolbar: "Merge View" switches from the current inline old → new single-row layout to a side-by-side two-panel table (File A left, File B right), scrolled in sync. Modified cells highlighted in both panels.
+Side-by-side two-panel table (File A left, File B right), scrolled in sync. Modified cells highlighted in both panels.
 
 ### v1.5 — Share / Permalink
-"Share" button that serializes the current diff result into a compressed base64 string and puts it in `window.location.hash`. Anyone opening that URL sees the same diff without re-uploading files. Uses `CompressionStream` API (built into modern browsers, no CDN).
+"Share" button that serializes the current diff into a compressed base64 URL hash. Anyone opening that URL sees the same diff without re-uploading files.
 
 ## Dependencies
 
