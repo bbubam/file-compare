@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.sheetjs.com; style-src 'unsafe-inline'"/>
 <title>XLSX Compare</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>"/>
 <style>
@@ -188,7 +189,7 @@ tr.row-locked>td{background:#0e1e2a;border-bottom:2px solid #0e7eff22}
   <div class="chg-list" id="chgList"></div>
 </div>
 
-<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
 <script src="script.js"></script>
 <div style="position:fixed;bottom:6px;right:10px;font-size:11px;color:#333;pointer-events:none">v1.0.2</div>
 </body>

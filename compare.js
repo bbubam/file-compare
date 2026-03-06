@@ -42,7 +42,18 @@ if (!file1 || !file2) {
   process.exit(1);
 }
 
-const diffs = compareExcelFiles(file1, file2);
+const path = require('path');
+const cwd = process.cwd();
+function safePath(f) {
+  const resolved = path.resolve(cwd, f);
+  if (!resolved.startsWith(cwd + path.sep) && resolved !== cwd) {
+    console.error('Invalid file path:', f);
+    process.exit(1);
+  }
+  return resolved;
+}
+
+const diffs = compareExcelFiles(safePath(file1), safePath(file2));
 
 if (diffs.length === 0) {
   console.log('Files are identical');
