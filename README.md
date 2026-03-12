@@ -1,6 +1,6 @@
-# XLSX Compare
+# File Compare
 
-A lightweight, zero-install browser tool for comparing two `.xlsx` or `.csv` files side by side — with row-level diffing, inline change highlighting, and an interactive grid.
+A lightweight, zero-install browser tool for comparing two `.xlsx`, `.xls`, `.csv`, or plain text/JSON files side by side — with row-level diffing, inline change highlighting, and an interactive grid.
 
 ## Features
 
@@ -9,7 +9,8 @@ A lightweight, zero-install browser tool for comparing two `.xlsx` or `.csv` fil
 - **Smart row matching** — falls back to positional (index-based) matching when no unique key column is found, so changed rows show as modified instead of deleted + added
 - **New/deleted column detection** — new columns show plain green, deleted columns show plain red; both always visible even with Hide Unchanged on
 - **Date formatting** — Excel date serial numbers are rendered as readable dates using the cell's own format string
-- **CSV support** — drop or select `.csv` files alongside `.xlsx`
+- **XLS/CSV support** — drop or select `.xls` or `.csv` files alongside `.xlsx`
+- **Text / JSON mode** — paste or drop TSV, CSV, JSON arrays, or any `.txt` file directly without uploading spreadsheets
 - **Ignore columns** — Alt+click a column header to exclude it from diff comparison entirely; ignored columns show a greyed badge and are hidden when Hide Unchanged is on
 - **3-tab view**
   - **Summary** — cards per sheet showing added / deleted / modified row counts, click to jump to grid
@@ -25,8 +26,9 @@ A lightweight, zero-install browser tool for comparing two `.xlsx` or `.csv` fil
 ## Usage
 
 1. Open `index.html` in a browser
-2. Drop or select **File A** (original) and **File B** (modified) — `.xlsx` or `.csv`
-3. Click **Compare**
+2. **Excel mode** (default): drop or select **File A** and **File B** — `.xlsx`, `.xls`, or `.csv`
+3. **Text mode**: hover the title → select **📝 Text Compare**, then paste or drop TSV, CSV, JSON, or `.txt` content
+4. Click **Compare** (or it runs automatically when both inputs are filled)
 
 ## Files
 
@@ -37,6 +39,13 @@ A lightweight, zero-install browser tool for comparing two `.xlsx` or `.csv` fil
 | `compare.js` | Node CLI tool for headless comparison |
 
 ## Changelog
+
+### v1.2.5
+- Renamed app to **File Compare**; repo moved to `bbubam/file-compare`
+- Hover dropdown on title to switch between **📊 Excel Compare** and **📝 Text Compare** modes
+- Text compare drop zones: drag and drop any file (`.txt`, `.csv`, `.json`, etc.) directly onto the textarea
+- Readability improvements: brighter text colors, larger base font size
+- `.xls` file support added
 
 ### v1.2.4
 - Text / JSON mode: paste TSV, CSV, or JSON arrays directly without uploading files
