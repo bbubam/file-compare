@@ -38,6 +38,11 @@ A lightweight, zero-install browser tool for comparing two `.xlsx` or `.csv` fil
 
 ## Changelog
 
+### v1.2.4
+- Text / JSON mode: paste TSV, CSV, or JSON arrays directly without uploading files
+- JSON arrays of objects auto-converted to tabular rows using object keys as headers
+- Mode toggle (File | Text / JSON) in header
+
 ### v1.2.3
 - Fix similarity-based row matching not triggering (branch was unreachable due to truthy string check)
 

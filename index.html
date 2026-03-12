@@ -3,38 +3,55 @@
 <head>
 <meta charset="UTF-8"/>
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.sheetjs.com; style-src 'unsafe-inline'"/>
-<title>XLSX Compare</title>
+<title>File Compare</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Segoe UI,sans-serif;background:#161618;color:#ececec;height:100vh;display:flex;flex-direction:column;overflow:hidden;font-size:15px;line-height:1.5}
+body{font-family:Segoe UI,sans-serif;background:#161618;color:#f0f0f0;height:100vh;display:flex;flex-direction:column;overflow:hidden;font-size:16px;line-height:1.5}
 
 /* HEADER */
-header{background:#1f1f22;padding:12px 24px;display:flex;align-items:center;gap:16px;border-bottom:1px solid #484850;flex-shrink:0;box-shadow:0 1px 6px #0005}
-header h1{font-size:20px;font-weight:800;color:#fff;white-space:nowrap;cursor:pointer;user-select:none;letter-spacing:-.3px}
+header{background:#1f1f22;padding:12px 24px;display:flex;align-items:center;gap:16px;border-bottom:1px solid #484850;flex-shrink:0;box-shadow:0 1px 6px #0005;flex-wrap:wrap}
+header h1{font-size:20px;font-weight:800;color:#fff;white-space:nowrap;cursor:pointer;user-select:none;letter-spacing:-.3px;position:relative}
 header h1:hover{color:#6ab0f5}
+.title-menu{display:none;position:absolute;top:calc(100% + 4px);left:0;background:#1f1f22;border:1px solid #484850;border-radius:8px;overflow:hidden;z-index:100;min-width:160px;box-shadow:0 4px 16px #0006}
+.title-menu.open{display:block}
+.title-menu-item{padding:10px 18px;font-size:14px;font-weight:600;color:#ccc;cursor:pointer;white-space:nowrap;letter-spacing:.1px}
+.title-menu-item:hover{background:#2a2a2e;color:#fff}
 
 .dz{border:2px dashed #444;border-radius:8px;padding:14px 24px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-width:260px;min-height:72px;transition:border-color .15s,background .15s;background:#252528}
 .dz:hover,.dz.over{border-color:#0e7eff;background:#1a2a3a}
-.dz .lbl{font-size:12px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.dz .lbl{font-size:12px;color:#aaa;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
 .dz .fn{font-size:14px;color:#4ec9b0;font-weight:700;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dz .hint{font-size:11px;color:#555}
+.dz .hint{font-size:11px;color:#888}
+.dz>span{pointer-events:none}
 .dz input{display:none}
+.mode-toggle{display:flex;background:#2a2a2e;border-radius:6px;border:1px solid #484850;overflow:hidden;flex-shrink:0}
+.mode-btn{padding:7px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#888;border:none;background:transparent;transition:background .15s,color .15s}
+.mode-btn:hover{color:#ccc}
+.mode-btn.active{background:#0e7eff;color:#fff}
+.text-inputs{display:none;flex:1;gap:12px;min-width:0}
+.text-inputs.visible{display:flex}
+.txt-wrap{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}
+.txt-lbl{font-size:12px;color:#aaa;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.txt-area{background:#252528;border:2px dashed #444;border-radius:8px;color:#f0f0f0;font-size:14px;font-family:Consolas,monospace;padding:10px 14px;resize:none;outline:none;height:72px;width:100%;transition:border-color .15s}
+.txt-area:focus{border-color:#0e7eff}
+.txt-area.over{border-color:#0e7eff;background:#1a2a3a}
+.txt-area.has-content{border-color:#4ec9b0;border-style:solid}
 
-#cmpBtn{margin-left:auto;background:#0e7eff;color:#fff;border:none;border-radius:6px;padding:12px 28px;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:.2px;transition:background .15s}
+#cmpBtn{margin-left:0;background:#0e7eff;color:#fff;border:none;border-radius:6px;padding:12px 28px;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:.2px;transition:background .15s}
 #cmpBtn:hover:not(:disabled){background:#2a8fff}
 #cmpBtn:disabled{background:#2a2a2e;color:#555;cursor:default}
 
 /* VIEW TABS */
 .view-tabs{display:flex;background:#1f1f22;border-bottom:1px solid #484850;flex-shrink:0;padding:0 24px}
-.view-tab{padding:13px 26px;font-size:14px;font-weight:700;cursor:pointer;color:#888;border-bottom:3px solid transparent;transition:color .15s;letter-spacing:.2px}
-.view-tab:hover{color:#ccc}
+.view-tab{padding:13px 26px;font-size:14px;font-weight:700;cursor:pointer;color:#aaa;border-bottom:3px solid transparent;transition:color .15s;letter-spacing:.2px}
+.view-tab:hover{color:#ddd}
 .view-tab.active{color:#fff;border-bottom-color:#0e7eff}
 
 /* PANELS */
 .panel{display:none;flex:1;overflow:auto;padding:24px}
 .panel.active{display:flex;flex-direction:column;gap:18px}
-#placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;color:#555;font-size:16px;font-weight:500;gap:10px}
+#placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;color:#777;font-size:16px;font-weight:500;gap:10px}
 #placeholder svg{opacity:.2}
 
 /* SUMMARY */
@@ -55,14 +72,14 @@ header h1:hover{color:#6ab0f5}
 .card-stats{display:flex;gap:8px}
 .stat{display:flex;flex-direction:column;align-items:center;background:#2a2a2e;border-radius:8px;padding:10px 0;flex:1}
 .stat .num{font-size:24px;font-weight:800;line-height:1}
-.stat .lbl{font-size:11px;color:#888;font-weight:600;margin-top:4px;text-transform:uppercase;letter-spacing:.4px}
+.stat .lbl{font-size:11px;color:#aaa;font-weight:600;margin-top:4px;text-transform:uppercase;letter-spacing:.4px}
 .stat.s-add .num{color:#5ddb9e}
 .stat.s-del .num{color:#ff6b6b}
 .stat.s-mod .num{color:#ffd166}
-.stat.s-tot .num{color:#ececec}
-.card-footer{font-size:12px;color:#666;font-weight:500}
+.stat.s-tot .num{color:#f0f0f0}
+.card-footer{font-size:12px;color:#888;font-weight:500}
 .sum-overview{display:flex;gap:14px;flex-shrink:0}
-.ov-stat{background:#1f1f22;border:1px solid #484850;border-radius:10px;padding:14px 22px;display:flex;align-items:center;gap:14px;font-size:14px;font-weight:600;color:#aaa}
+.ov-stat{background:#1f1f22;border:1px solid #484850;border-radius:10px;padding:14px 22px;display:flex;align-items:center;gap:14px;font-size:14px;font-weight:600;color:#bbb}
 .ov-stat .big{font-size:32px;font-weight:800;line-height:1}
 .ov-stat.ov-add .big{color:#5ddb9e}
 .ov-stat.ov-del .big{color:#ff6b6b}
@@ -71,7 +88,7 @@ header h1:hover{color:#6ab0f5}
 
 /* GRID */
 .sheet-tabs{display:flex;gap:3px;flex-wrap:wrap;flex-shrink:0}
-.stab{padding:7px 16px;font-size:13px;font-weight:700;border-radius:6px 6px 0 0;cursor:pointer;background:#2a2a2e;color:#888;border:1px solid #484850;border-bottom:none;letter-spacing:.2px}
+.stab{padding:7px 16px;font-size:13px;font-weight:700;border-radius:6px 6px 0 0;cursor:pointer;background:#2a2a2e;color:#aaa;border:1px solid #484850;border-bottom:none;letter-spacing:.2px}
 .stab.active{background:#161618;color:#fff;border-color:#666}
 .stab.chg{color:#ffd166}
 .stab.sadd{color:#5ddb9e}
@@ -81,13 +98,13 @@ header h1:hover{color:#6ab0f5}
 .tbtn{background:#2a2a2e;border:1px solid #484850;color:#bbb;border-radius:5px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s}
 .tbtn:hover{background:#333}
 .tbtn.active{background:#0e7eff;border-color:#0e7eff;color:#fff}
-.lock-hint{font-size:12px;color:#555;font-style:normal}.lock-hint kbd{font-family:inherit;background:#2a2a2a;border:1px solid #444;border-radius:3px;padding:1px 5px;font-size:11px;color:#ccc}.lock-hint .lh-action{color:#888}
+.lock-hint{font-size:12px;color:#888;font-style:normal}.lock-hint kbd{font-family:inherit;background:#2a2a2a;border:1px solid #444;border-radius:3px;padding:1px 5px;font-size:11px;color:#ddd}.lock-hint .lh-action{color:#aaa}
 .grid-wrap{overflow:auto;flex:1;border:1px solid #484850;border-radius:0 6px 6px 6px}
-table{border-collapse:collapse;font-size:14px}
-th{background:#222226;color:#ccc;padding:8px 16px;border:1px solid #444;font-weight:700;position:sticky;top:0;z-index:2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative;min-width:60px;letter-spacing:.2px}
+table{border-collapse:collapse;font-size:15px}
+th{background:#222226;color:#ddd;padding:8px 16px;border:1px solid #444;font-weight:700;position:sticky;top:0;z-index:2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative;min-width:60px;letter-spacing:.2px}
 th .resize-h{position:absolute;right:0;top:0;width:6px;height:100%;cursor:col-resize;z-index:10;background:transparent}
 th .resize-h:hover,th .resize-h.dragging{background:#0e7eff88}
-td{padding:7px 16px;border:1px solid #383838;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#e8e8e8;font-weight:500;position:relative}
+td{padding:7px 16px;border:1px solid #383838;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#f0f0f0;font-weight:500;position:relative}
 tr:hover>td{background:#1e1e22}
 tr:hover>td.ca{background:#1e5a1e!important}
 tr:hover>td.cr{background:#5a1e1e!important}
@@ -117,34 +134,52 @@ th.th-ignored .ign-badge{font-size:10px;color:#555;margin-left:4px;font-weight:4
 th .lock-icon{font-size:11px;margin-right:4px;opacity:.8}
 th .lock-icon-r{margin-right:0;margin-left:4px}
 
-.no-chg{color:#666;font-size:14px;font-weight:500;padding:12px 0}
+.no-chg{color:#999;font-size:14px;font-weight:500;padding:12px 0}
 .chg-list{display:flex;flex-direction:column;gap:6px}
 .chg-item{background:#1f1f22;border:1px solid #484850;border-radius:6px;padding:11px 18px;font-size:14px;font-weight:500;display:grid;grid-template-columns:130px minmax(150px,1fr) 100px 1fr 1fr;gap:12px;align-items:center;color:#e8e8e8;transition:background .1s}
 .chg-item:hover{background:#252528}
-.chg-hdr{background:#222226;border:1px solid #484850;border-radius:6px;padding:9px 18px;font-size:12px;color:#888;display:grid;grid-template-columns:130px minmax(150px,1fr) 100px 1fr 1fr;gap:12px;font-weight:700;flex-shrink:0;text-transform:uppercase;letter-spacing:.4px}
+.chg-hdr{background:#222226;border:1px solid #484850;border-radius:6px;padding:9px 18px;font-size:12px;color:#aaa;display:grid;grid-template-columns:130px minmax(150px,1fr) 100px 1fr 1fr;gap:12px;font-weight:700;flex-shrink:0;text-transform:uppercase;letter-spacing:.4px}
 .val-old{color:#ff6b6b;text-decoration:line-through;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
 .val-new{color:#5ddb9e;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
 .filter-bar{display:flex;gap:10px;align-items:center;flex-shrink:0}
 .filter-bar input{background:#222226;border:1px solid #484850;color:#e8e8e8;border-radius:6px;padding:8px 14px;font-size:14px;width:280px;outline:none}
 .filter-bar input:focus{border-color:#0e7eff}
 .filter-bar select{background:#222226;border:1px solid #484850;color:#e8e8e8;border-radius:6px;padding:8px 12px;font-size:14px;font-weight:600;outline:none}
-.count{font-size:14px;font-weight:600;color:#888;margin-left:auto}
+.count{font-size:14px;font-weight:600;color:#aaa;margin-left:auto}
 </style>
 </head>
 <body>
 <header>
-  <h1 onclick="resetApp()">📊 XLSX Compare</h1>
-  <div class="dz" id="dz1" onclick="document.getElementById('f1').click()">
-    <input type="file" id="f1" accept=".xlsx,.csv"/>
-    <span class="lbl">File A — Original</span>
-    <span class="fn" id="fn1">Drop or click to select</span>
-    <span class="hint">Supports .xlsx and .csv</span>
+  <h1 id="appTitle">
+    📊 File Compare
+    <div class="title-menu" id="titleMenu">
+      <div class="title-menu-item" onclick="setMode('file')">📊 Excel Compare</div>
+      <div class="title-menu-item" onclick="setMode('text')">📝 Text Compare</div>
+    </div>
+  </h1>
+  <div id="fileInputs" style="display:flex;gap:16px;flex:1;min-width:0">
+    <div class="dz" id="dz1" onclick="document.getElementById('f1').click()">
+      <input type="file" id="f1" accept=".xlsx,.xls,.csv"/>
+      <span class="lbl">File A — Original</span>
+      <span class="fn" id="fn1">Drop or click to select</span>
+      <span class="hint">Supports .xlsx, .xls and .csv</span>
+    </div>
+    <div class="dz" id="dz2" onclick="document.getElementById('f2').click()">
+      <input type="file" id="f2" accept=".xlsx,.xls,.csv"/>
+      <span class="lbl">File B — Modified</span>
+      <span class="fn" id="fn2">Drop or click to select</span>
+      <span class="hint">Supports .xlsx, .xls and .csv</span>
+    </div>
   </div>
-  <div class="dz" id="dz2" onclick="document.getElementById('f2').click()">
-    <input type="file" id="f2" accept=".xlsx,.csv"/>
-    <span class="lbl">File B — Modified</span>
-    <span class="fn" id="fn2">Drop or click to select</span>
-    <span class="hint">Supports .xlsx and .csv</span>
+  <div class="text-inputs" id="textInputs">
+    <div class="txt-wrap">
+      <span class="txt-lbl">Text / JSON A — Original</span>
+      <textarea class="txt-area" id="txtA" placeholder="Paste or drop TSV, CSV, JSON, or .txt…" oninput="onTxtInput()"></textarea>
+    </div>
+    <div class="txt-wrap">
+      <span class="txt-lbl">Text / JSON B — Modified</span>
+      <textarea class="txt-area" id="txtB" placeholder="Paste or drop TSV, CSV, JSON, or .txt…" oninput="onTxtInput()"></textarea>
+    </div>
   </div>
   <button id="cmpBtn" disabled>Compare</button>
 </header>
@@ -200,6 +235,6 @@ th .lock-icon-r{margin-right:0;margin-left:4px}
 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
 <script src="script.js"></script>
-<div style="position:fixed;bottom:6px;right:10px;font-size:12px;color:#666;pointer-events:none;font-weight:600;letter-spacing:.3px">v1.2.3</div>
+<div style="position:fixed;bottom:6px;right:10px;font-size:12px;color:#666;pointer-events:none;font-weight:600;letter-spacing:.3px">v1.2.4</div>
 </body>
 </html>
