@@ -146,6 +146,23 @@ th .lock-icon-r{margin-right:0;margin-left:4px}
 .filter-bar input:focus{border-color:#0e7eff}
 .filter-bar select{background:#222226;border:1px solid #484850;color:#e8e8e8;border-radius:6px;padding:8px 12px;font-size:14px;font-weight:600;outline:none}
 .count{font-size:14px;font-weight:600;color:#aaa;margin-left:auto}
+
+/* TEXT DIFF */
+#pText{display:none;flex:1;overflow:auto;flex-direction:column;font-family:Consolas,monospace;font-size:13px}
+.tdiff{display:flex;flex-direction:column;min-width:0}
+.tdiff-hdr{display:grid;grid-template-columns:40px 1fr 40px 1fr;background:#222226;color:#aaa;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.4px;padding:8px 0;border-bottom:1px solid #484850;position:sticky;top:0;z-index:2}
+.tdiff-hdr span{padding:0 12px}
+.tdiff-hdr span:nth-child(1){grid-column:2}
+.tdiff-hdr span:nth-child(2){grid-column:4}
+.tdiff-body{display:flex;flex-direction:column}
+.tdiff-row{display:grid;grid-template-columns:40px 1fr 40px 1fr;border-bottom:1px solid #2a2a2e;min-height:24px}
+.tdiff-row:hover{background:#1e1e22}
+.tdiff-ln{color:#555;text-align:right;padding:3px 8px;user-select:none;font-size:11px;border-right:1px solid #2a2a2e;white-space:nowrap}
+.tdiff-cell{padding:3px 12px;white-space:pre-wrap;word-break:break-all;color:#f0f0f0}
+.tdiff-del .tdiff-ln:first-child,.tdiff-del .tdiff-cell:nth-child(2){background:#3a1a1a;color:#ff8080}
+.tdiff-del .tdiff-ln:nth-child(3),.tdiff-del .tdiff-cell:nth-child(4){background:#1a1a1d}
+.tdiff-add .tdiff-ln:first-child,.tdiff-add .tdiff-cell:nth-child(2){background:#1a1a1d}
+.tdiff-add .tdiff-ln:nth-child(3),.tdiff-add .tdiff-cell:nth-child(4){background:#1a3a1a;color:#5ddb9e}
 </style>
 </head>
 <body>
@@ -232,6 +249,8 @@ th .lock-icon-r{margin-right:0;margin-left:4px}
   <div class="chg-hdr"><span>Sheet</span><span>Column</span><span>Type</span><span>Old Value</span><span>New Value</span></div>
   <div class="chg-list" id="chgList"></div>
 </div>
+
+<div id="pText"></div>
 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
 <script src="script.js"></script>
