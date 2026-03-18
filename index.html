@@ -148,32 +148,28 @@ th .lock-icon-r{margin-right:0;margin-left:4px}
 .count{font-size:14px;font-weight:600;color:#aaa;margin-left:auto}
 
 /* TEXT DIFF */
-#pText{display:none;flex:1;overflow:auto;flex-direction:column;font-family:Consolas,monospace;font-size:13px}
-.tdiff{display:flex;flex-direction:column;min-width:0}
-.tdiff-hdr{display:grid;grid-template-columns:40px 1fr 40px 1fr;background:#222226;color:#aaa;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.4px;padding:8px 0;border-bottom:1px solid #484850;position:sticky;top:0;z-index:2}
-.tdiff-hdr span{padding:0 12px}
-.tdiff-hdr span:nth-child(1){grid-column:2}
-.tdiff-hdr span:nth-child(2){grid-column:4}
-.tdiff-body{display:flex;flex-direction:column}
-.tdiff-row{display:grid;grid-template-columns:40px 1fr 40px 1fr;border-bottom:1px solid #2a2a2e;min-height:24px}
-.tdiff-row:hover{background:#1e1e22}
-.tdiff-ln{color:#555;text-align:right;padding:3px 8px;user-select:none;font-size:11px;border-right:1px solid #2a2a2e;white-space:nowrap}
-.tdiff-cell{padding:3px 12px;white-space:pre-wrap;word-break:break-all;color:#f0f0f0}
-.tdiff-del .tdiff-ln:first-child,.tdiff-del .tdiff-cell:nth-child(2){background:#3a1a1a;color:#ff8080}
-.tdiff-del .tdiff-ln:nth-child(3),.tdiff-del .tdiff-cell:nth-child(4){background:#1a1a1d}
-.tdiff-add .tdiff-ln:first-child,.tdiff-add .tdiff-cell:nth-child(2){background:#1a1a1d}
-.tdiff-add .tdiff-ln:nth-child(3),.tdiff-add .tdiff-cell:nth-child(4){background:#1a3a1a;color:#5ddb9e}
+#pText{display:none;flex:1;overflow:hidden;font-family:Consolas,monospace;font-size:13px;flex-direction:column}
+#pText .tdiff-toolbar{display:flex;align-items:center;gap:10px;padding:6px 12px;background:#1f1f22;border-bottom:1px solid #484850;flex-shrink:0}
+#pText .tdiff-wrap{display:flex;flex-direction:row;flex:1;overflow:hidden}
+#pText .tdiff-pane{flex:1;overflow:auto;min-width:0;border-right:2px solid #2a2a2e}
+#pText .tdiff-pane:last-child{border-right:none}
+#pText .tdiff-pane-hdr{background:#222226;color:#aaa;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.4px;padding:8px 12px;border-bottom:1px solid #484850;position:sticky;top:0;z-index:2}
+#pText .tdiff-row{display:flex;min-height:20px}
+#pText .tdiff-ln{color:#555;text-align:right;font-size:11px;padding:2px 6px;user-select:none;white-space:nowrap;flex-shrink:0;width:36px;border-right:1px solid #1e1e22}
+#pText .tdiff-cell{padding:2px 10px;white-space:pre;color:#f0f0f0;flex:1}
+#pText .tdiff-row.del .tdiff-ln,#pText .tdiff-row.del .tdiff-cell{background:#3a1a1a;color:#ff8080}
+#pText .tdiff-row.add .tdiff-ln,#pText .tdiff-row.add .tdiff-cell{background:#1a3a1a;color:#5ddb9e}
+#pText .tdiff-chk{background:#ff3a3a;color:#fff;border-radius:3px;padding:0 2px}
+#pText .tdiff-chk-add{background:#1aff6a;color:#000;border-radius:3px;padding:0 2px}
 </style>
 </head>
 <body>
 <header>
-  <h1 id="appTitle">
-    📊 File Compare
-    <div class="title-menu" id="titleMenu">
-      <div class="title-menu-item" onclick="setMode('file')">📊 Excel Compare</div>
-      <div class="title-menu-item" onclick="setMode('text')">📝 Text Compare</div>
-    </div>
-  </h1>
+  <h1 id="appTitle">📊 File Compare</h1>
+  <div style="display:flex;background:#2a2a2e;border-radius:6px;border:1px solid #484850;overflow:hidden;flex-shrink:0">
+    <button class="mode-btn active" id="modeFile" onclick="setMode('file')">📊 Excel</button>
+    <button class="mode-btn" id="modeTxt" onclick="setMode('text')">📝 Text</button>
+  </div>
   <div id="fileInputs" style="display:flex;gap:16px;flex:1;min-width:0">
     <div class="dz" id="dz1" onclick="document.getElementById('f1').click()">
       <input type="file" id="f1" accept=".xlsx,.xls,.csv"/>
@@ -188,16 +184,7 @@ th .lock-icon-r{margin-right:0;margin-left:4px}
       <span class="hint">Supports .xlsx, .xls and .csv</span>
     </div>
   </div>
-  <div class="text-inputs" id="textInputs">
-    <div class="txt-wrap">
-      <span class="txt-lbl">Text / JSON A — Original</span>
-      <textarea class="txt-area" id="txtA" placeholder="Paste or drop TSV, CSV, JSON, or .txt…" oninput="onTxtInput()"></textarea>
-    </div>
-    <div class="txt-wrap">
-      <span class="txt-lbl">Text / JSON B — Modified</span>
-      <textarea class="txt-area" id="txtB" placeholder="Paste or drop TSV, CSV, JSON, or .txt…" oninput="onTxtInput()"></textarea>
-    </div>
-  </div>
+  <div class="text-inputs" id="textInputs"></div>
   <button id="cmpBtn" disabled>Compare</button>
 </header>
 
@@ -211,6 +198,7 @@ th .lock-icon-r{margin-right:0;margin-left:4px}
     <textarea class="txt-area" id="txtB" placeholder="Paste or drop TSV, CSV, JSON, or .txt…" oninput="onTxtInput()"></textarea>
   </div>
 </div>
+<div id="viewTabs" class="view-tabs" style="display:none">
   <div class="view-tab active" data-view="summary">Summary</div>
   <div class="view-tab" data-view="grid">Sheet Grid</div>
   <div class="view-tab" data-view="changes">All Changes</div>
