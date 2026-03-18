@@ -30,7 +30,7 @@ header h1:hover{color:#6ab0f5}
 .mode-btn:hover{color:#ccc}
 .mode-btn.active{background:#0e7eff;color:#fff}
 .text-inputs{display:none;flex:1;gap:12px;min-width:0}
-.text-inputs.visible{display:flex}
+.text-inputs.visible{display:flex;flex-direction:row}
 .txt-wrap{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}
 .txt-lbl{font-size:12px;color:#aaa;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
 .txt-area{background:#252528;border:2px dashed #444;border-radius:8px;color:#f0f0f0;font-size:14px;font-family:Consolas,monospace;padding:10px 14px;resize:none;outline:none;height:72px;width:100%;transition:border-color .15s}
@@ -201,7 +201,16 @@ th .lock-icon-r{margin-right:0;margin-left:4px}
   <button id="cmpBtn" disabled>Compare</button>
 </header>
 
-<div class="view-tabs" id="viewTabs" style="display:none">
+<div id="textBar" style="display:none;gap:12px;padding:10px 24px;background:#1f1f22;border-bottom:1px solid #484850;flex-shrink:0">
+  <div class="txt-wrap">
+    <span class="txt-lbl">Text / JSON A — Original</span>
+    <textarea class="txt-area" id="txtA" placeholder="Paste or drop TSV, CSV, JSON, or .txt…" oninput="onTxtInput()"></textarea>
+  </div>
+  <div class="txt-wrap">
+    <span class="txt-lbl">Text / JSON B — Modified</span>
+    <textarea class="txt-area" id="txtB" placeholder="Paste or drop TSV, CSV, JSON, or .txt…" oninput="onTxtInput()"></textarea>
+  </div>
+</div>
   <div class="view-tab active" data-view="summary">Summary</div>
   <div class="view-tab" data-view="grid">Sheet Grid</div>
   <div class="view-tab" data-view="changes">All Changes</div>
